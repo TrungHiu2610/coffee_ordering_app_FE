@@ -16,17 +16,28 @@ class CartScreenState extends State<CartScreen>
   Widget build(BuildContext context) {
     return Column(
       children: [
-        ListView.builder(
-            itemCount: HomeScreenState().allDrinks.length,
-          itemBuilder: (context,index) => ProductCard(
-              imageUrl: 'assets/images/' + HomeScreenState().allDrinks.elementAt(index).name + '.png',
-              name: HomeScreenState().allDrinks.elementAt(index).name,
-              price: 45000,
-              onAdd: () {}
-        )
-        )
+        // GridView.builder(
+        //   itemCount: filteredProducts.length,
+        //   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        //       crossAxisCount: 2,
+        //       mainAxisSpacing: 5,
+        //       crossAxisSpacing: 10,
+        //       childAspectRatio: 0.75
+        //   ),
+        //   itemBuilder: (context, index) {
+        //     return ProductCard(
+        //       // tạm thời cho giống nhau hết
+        //         imageUrl: 'assets/images/Cà phê sữa.png',
+        //         name: filteredProducts
+        //             .elementAt(index)
+        //             .name,
+        //         price: filteredProducts.elementAt(index).price,
+        //         onAdd: () {}
+        //     );
+        //   },
+        // )
+        Text("Cart screen")
       ]
     );
   }
-
 }
