@@ -11,4 +11,7 @@ class _CartItem {
   //relationship
   late _Cart? cart;
   late _Product? product;
+  late _ProductSize? productSize;
+  late List<_Topping> toppings;
 }
+

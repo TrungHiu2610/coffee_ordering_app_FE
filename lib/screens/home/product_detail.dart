@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_coffee_shop_app/models/models.dart';
+import 'package:provider/provider.dart';
 import 'package:realm/realm.dart';
+
+import '../../providers/cart_provider.dart';
 
 class ProductDetail extends StatefulWidget {
   final Product product;
@@ -10,7 +13,7 @@ class ProductDetail extends StatefulWidget {
   ProductDetail({
     required this.product,
     required this.productSizes,
-    required this.toppings
+    required this.toppings,
   });
 
   @override
@@ -18,26 +21,28 @@ class ProductDetail extends StatefulWidget {
 }
 
 class ProductDetailState extends State<ProductDetail> {
+  TextEditingController txtGhiChu = TextEditingController();
+
   ObjectId? selectedSizeId;
-  List<ObjectId> selectedToppings = [];
+  List<Topping> selectedToppings = [];
 
   int quantity = 1;
   double totalPrice = 0;
 
   void updateTotalPrice() {
-    if(selectedSizeId==null)
-    {
+    if (selectedSizeId == null) {
       return;
     }
 
     final basePrice = widget.product.price;
 
-    final sizePrice = widget.productSizes.firstWhere(
-          (size) => size.id == selectedSizeId,
-    ).additionalPrice;
+    final sizePrice =
+        widget.productSizes
+            .firstWhere((size) => size.id == selectedSizeId)
+            .additionalPrice;
 
     final double toppingsPrice = widget.toppings
-        .where((topping) => selectedToppings.contains(topping.id))
+        .where((topping) => selectedToppings.contains(topping))
         .fold(0, (sum, topping) => sum + topping.price);
 
     setState(() {
@@ -55,15 +60,22 @@ class ProductDetailState extends State<ProductDetail> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-          title: Text("Chi tiết sản phẩm"),
+        title: Text(
+            "Chi tiết sản phẩm",
+          style: TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+          ),
+          textAlign: TextAlign.center,
+        ),
         leading: IconButton(
-            onPressed: (){
-              Navigator.pop(context);
-            },
-            icon: Icon(Icons.arrow_back)
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          icon: Icon(Icons.arrow_back),
         ),
         actions: [
-          IconButton(onPressed: (){}, icon: Icon(Icons.shopping_cart))
+          IconButton(onPressed: () {}, icon: Icon(Icons.shopping_cart)),
         ],
       ),
       body: SafeArea(
@@ -79,17 +91,17 @@ class ProductDetailState extends State<ProductDetail> {
                     // Hình ảnh sản phẩm
                     widget.product.img.isEmpty
                         ? Image.asset(
-                      "assets/images/img_unavailable",
-                      width: double.infinity,
-                      height: 360,
-                      fit: BoxFit.cover,
-                    )
+                          "assets/images/img_unavailable",
+                          width: double.infinity,
+                          height: 360,
+                          fit: BoxFit.cover,
+                        )
                         : Image.asset(
-                      'assets/images/Cà phê sữa.png',
-                      width: double.infinity,
-                      height: 360,
-                      fit: BoxFit.cover,
-                    ),
+                          'assets/images/Cà phê sữa.png',
+                          width: double.infinity,
+                          height: 360,
+                          fit: BoxFit.cover,
+                        ),
                     // Tên sản phẩm, nút add vào wishlist
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -97,19 +109,19 @@ class ProductDetailState extends State<ProductDetail> {
                         Text(
                           widget.product.name,
                           style: TextStyle(
-                              fontSize: 22,
-                              fontWeight: FontWeight.bold
+                            fontSize: 22,
+                            fontWeight: FontWeight.bold,
                           ),
                           textAlign: TextAlign.left,
                         ),
 
                         IconButton(
-                          onPressed: (){
+                          onPressed: () {
                             // xử lý thêm vào wishlist
                           },
                           icon: Icon(Icons.favorite),
                           alignment: Alignment.centerRight,
-                        )
+                        ),
                       ],
                     ),
 
@@ -138,7 +150,9 @@ class ProductDetailState extends State<ProductDetail> {
                                   updateTotalPrice();
                                 },
                               ),
-                              Text("${productSize.size?.name} (${productSize.additionalPrice + widget.product.price}đ)"),
+                              Text(
+                                "${productSize.size?.name} (${productSize.additionalPrice + widget.product.price}đ)",
+                              ),
                               SizedBox(width: 12),
                             ],
                           );
@@ -164,13 +178,13 @@ class ProductDetailState extends State<ProductDetail> {
                               Material(
                                 color: Colors.transparent,
                                 child: Checkbox(
-                                  value: selectedToppings.contains(topping.id),
+                                  value: selectedToppings.contains(topping),
                                   onChanged: (value) {
                                     setState(() {
                                       if (value == true) {
-                                        selectedToppings.add(topping.id);
+                                        selectedToppings.add(topping);
                                       } else {
-                                        selectedToppings.remove(topping.id);
+                                        selectedToppings.remove(topping);
                                       }
                                     });
                                     updateTotalPrice();
@@ -182,9 +196,7 @@ class ProductDetailState extends State<ProductDetail> {
                               ),
                               Text(
                                 "${topping.name} (+${topping.price}đ)",
-                                style: TextStyle(
-                                  fontSize: 24,
-                                ),
+                                style: TextStyle(fontSize: 24),
                               ),
                               SizedBox(width: 12),
                             ],
@@ -199,20 +211,24 @@ class ProductDetailState extends State<ProductDetail> {
                     Text("Ghi chú:", style: TextStyle(fontSize: 18)),
                     SizedBox(height: 8),
                     TextField(
+                      controller: txtGhiChu,
                       maxLines: 3,
                       decoration: InputDecoration(
-                        hintText: "Nhập yêu cầu thêm, ví dụ: ít đá, ít đường...",
+                        hintText:
+                            "Nhập yêu cầu thêm, ví dụ: ít đá, ít đường...",
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(8),
                         ),
-                        contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                        contentPadding: EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 10,
+                        ),
                       ),
                     ),
                   ],
                 ),
               ),
             ),
-
 
             // Số lượng sp, tổng tiền, add to cart
             Positioned(
@@ -228,7 +244,10 @@ class ProductDetailState extends State<ProductDetail> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text("${quantity} sản phẩm", style: TextStyle(color: Colors.grey[700])),
+                        Text(
+                          "${quantity} sản phẩm",
+                          style: TextStyle(color: Colors.grey[700]),
+                        ),
                         Row(
                           children: [
                             IconButton(
@@ -259,28 +278,76 @@ class ProductDetailState extends State<ProductDetail> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text("${totalPrice}đ", style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+                        Text(
+                          "${totalPrice}đ",
+                          style: TextStyle(
+                            fontSize: 22,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                         ElevatedButton(
                           onPressed: () {
-                            // xử lý thêm vào giỏ hàng
+                            if (selectedSizeId == null) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                    "Vui lòng chọn size trước khi thêm vào giỏ hàng",
+                                  ),
+                                ),
+                              );
+                              return;
+                            }
+
+                            final cartProvider = Provider.of<CartProvider>(
+                              context,
+                              listen: false,
+                            );
+                            final productToAdd = widget.product;
+                            final productSizeToAdd = widget.productSizes
+                                .firstWhere(
+                                  (size) =>
+                                      size.id == selectedSizeId &&
+                                      size.product?.id == productToAdd.id,
+                                );
+
+                            // thêm vào giỏ hàng
+                            cartProvider.addToCart(
+                              product: productToAdd,
+                              productSize: productSizeToAdd,
+                              toppings: selectedToppings,
+                              quantity: quantity,
+                              description: txtGhiChu.text,
+                            );
+
+                            Navigator.pop(context);
+
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text("Đã thêm vào giỏ hàng")),
+                            );
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.cyan,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),
                             ),
-                            padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                            padding: EdgeInsets.symmetric(
+                              horizontal: 24,
+                              vertical: 12,
+                            ),
                           ),
-                          child: Text("Thêm vào giỏ hàng", style: TextStyle(color: Colors.white)),
-                        )
+                          child: Text(
+                            "Thêm vào giỏ hàng",
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        ),
                       ],
-                    )
+                    ),
                   ],
                 ),
               ),
-            )
+            ),
           ],
-        )
+        ),
       ),
     );
   }

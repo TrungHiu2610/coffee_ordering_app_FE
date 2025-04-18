@@ -504,12 +504,17 @@ class CartItem extends _CartItem
     String description, {
     Cart? cart,
     Product? product,
+    ProductSize? productSize,
+    Iterable<Topping> toppings = const [],
   }) {
     RealmObjectBase.set(this, 'id', id);
     RealmObjectBase.set(this, 'quantity', quantity);
     RealmObjectBase.set(this, 'description', description);
     RealmObjectBase.set(this, 'cart', cart);
     RealmObjectBase.set(this, 'product', product);
+    RealmObjectBase.set(this, 'productSize', productSize);
+    RealmObjectBase.set<RealmList<Topping>>(
+        this, 'toppings', RealmList<Topping>(toppings));
   }
 
   CartItem._();
@@ -544,6 +549,20 @@ class CartItem extends _CartItem
       RealmObjectBase.set(this, 'product', value);
 
   @override
+  ProductSize? get productSize =>
+      RealmObjectBase.get<ProductSize>(this, 'productSize') as ProductSize?;
+  @override
+  set productSize(covariant ProductSize? value) =>
+      RealmObjectBase.set(this, 'productSize', value);
+
+  @override
+  RealmList<Topping> get toppings =>
+      RealmObjectBase.get<Topping>(this, 'toppings') as RealmList<Topping>;
+  @override
+  set toppings(covariant RealmList<Topping> value) =>
+      throw RealmUnsupportedSetError();
+
+  @override
   Stream<RealmObjectChanges<CartItem>> get changes =>
       RealmObjectBase.getChanges<CartItem>(this);
 
@@ -561,6 +580,8 @@ class CartItem extends _CartItem
       'description': description.toEJson(),
       'cart': cart.toEJson(),
       'product': product.toEJson(),
+      'productSize': productSize.toEJson(),
+      'toppings': toppings.toEJson(),
     };
   }
 
@@ -579,6 +600,8 @@ class CartItem extends _CartItem
           fromEJson(description),
           cart: fromEJson(ejson['cart']),
           product: fromEJson(ejson['product']),
+          productSize: fromEJson(ejson['productSize']),
+          toppings: fromEJson(ejson['toppings']),
         ),
       _ => raiseInvalidEJson(ejson),
     };
@@ -595,6 +618,10 @@ class CartItem extends _CartItem
           optional: true, linkTarget: 'Cart'),
       SchemaProperty('product', RealmPropertyType.object,
           optional: true, linkTarget: 'Product'),
+      SchemaProperty('productSize', RealmPropertyType.object,
+          optional: true, linkTarget: 'ProductSize'),
+      SchemaProperty('toppings', RealmPropertyType.object,
+          linkTarget: 'Topping', collectionType: RealmCollectionType.list),
     ]);
   }();
 

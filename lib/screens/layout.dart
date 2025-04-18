@@ -3,6 +3,9 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_coffee_shop_app/screens/cart/cart_screen.dart';
 import 'package:flutter_coffee_shop_app/screens/home/home_screen.dart';
 import 'package:flutter_coffee_shop_app/screens/widgets/appbar_home.dart';
+import 'package:provider/provider.dart';
+
+import '../providers/cart_provider.dart';
 
 class LayoutScreen extends StatefulWidget {
   const LayoutScreen({super.key});
@@ -15,14 +18,13 @@ class LayoutScreenState extends State<LayoutScreen> {
 
   int selectedBottomBarIndex = 0;
   Widget bodyContent = HomeScreen();
-  PreferredSizeWidget appBarContent = AppBarHome();
-
+  PreferredSizeWidget? appBarContent = AppBarHome();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: appBarContent,
       body: bodyContent,
-      bottomNavigationBar: BottomNavigationBar(
+      bottomNavigationBar:BottomNavigationBar(
         backgroundColor: Color(0xFF124258),
         selectedItemColor: Colors.white,
         unselectedItemColor: Colors.white70,
@@ -34,13 +36,13 @@ class LayoutScreenState extends State<LayoutScreen> {
 
             switch(selectedBottomBarIndex){
               case 0:
+                appBarContent = AppBarHome();
                 bodyContent = HomeScreen();
                 break;
               case 1:
-                bodyContent = CartScreen();
-                break;
-              case 2:
-                bodyContent = Text("Test 2");
+                final cartProvider = Provider.of<CartProvider>(context, listen: false);
+                cartProvider.clearCart();
+                bodyContent = HomeScreen();
                 break;
             }
           });
@@ -52,23 +54,19 @@ class LayoutScreenState extends State<LayoutScreen> {
             label: 'Home',
           ),
           BottomNavigationBarItem(
-              icon: Icon(Icons.shopping_cart),
-              label: 'Cart'
-          ),
-          BottomNavigationBarItem(
               icon: Icon(Icons.favorite),
-              label: 'Favourite'
+              label: 'Clear cart'
           ),
           BottomNavigationBarItem(
               icon: Icon(Icons.checklist),
-              label: 'My Order'
+              label: 'My order'
           ),
           BottomNavigationBarItem(
               icon: Icon(Icons.perm_identity),
               label: 'Profile'
           ),
         ],
-      ),
+      )
     );
   }
 }
