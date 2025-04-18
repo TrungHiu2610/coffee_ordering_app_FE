@@ -1,6 +1,4 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_coffee_shop_app/models/models.dart' as model;
 import 'package:flutter_coffee_shop_app/screens/home/product_detail.dart';
 import 'package:flutter_coffee_shop_app/screens/home/widgets/banner.dart';
@@ -107,7 +105,6 @@ class HomeScreenState extends State<HomeScreen> {
             },
           ),
         ),
-
 
         // Danh sách đồ uống
         Expanded(

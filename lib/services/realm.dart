@@ -20,10 +20,15 @@ class RealmService
       Size.schema,
       Topping.schema,
       ProductSize.schema
-    ], schemaVersion: 3);
+    ], schemaVersion: 4);
 
     this._realm = Realm(config);
   }
 
   Realm get realm => _realm;
+
+  ObjectId getCurrentUserId() {
+    final user = realm.all<User>().first; // hoặc logic login cụ thể của bạn
+    return user.id;
+  }
 }
