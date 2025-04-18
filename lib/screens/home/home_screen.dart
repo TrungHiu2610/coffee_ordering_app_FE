@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_coffee_shop_app/models/models.dart' as model;
+import 'package:flutter_coffee_shop_app/screens/home/product_detail.dart';
 import 'package:flutter_coffee_shop_app/screens/home/widgets/banner.dart';
 import 'package:flutter_coffee_shop_app/screens/home/widgets/product_card.dart';
 import 'package:flutter_coffee_shop_app/services/realm.dart';
@@ -106,6 +107,8 @@ class HomeScreenState extends State<HomeScreen> {
             },
           ),
         ),
+
+
         // Danh sách đồ uống
         Expanded(
           child: GridView.builder(
@@ -124,7 +127,14 @@ class HomeScreenState extends State<HomeScreen> {
                       .elementAt(index)
                       .name,
                   price: filteredProducts.elementAt(index).price,
-                  onAdd: () {}
+                  onAdd: () {},
+                onTap: (){
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => ProductDetail()
+                        )
+                    );
+                }
               );
             },
           ),

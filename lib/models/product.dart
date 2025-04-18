@@ -15,4 +15,6 @@ class _Product {
 
   @Backlink(#product)
   late Iterable<_Review> reviews;
+
+  late List<_Topping> toppings;
 }

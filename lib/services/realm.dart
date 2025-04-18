@@ -16,8 +16,10 @@ class RealmService
       InvoiceItem.schema,
       Product.schema,
       Review.schema,
-      User.schema
-    ]);
+      User.schema,
+      Size.schema,
+      Topping.schema
+    ], schemaVersion: 2);
 
     this._realm = Realm(config);
   }

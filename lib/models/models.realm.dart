@@ -250,6 +250,7 @@ class Product extends _Product with RealmEntity, RealmObjectBase, RealmObject {
     String img,
     bool state, {
     Category? category,
+    Iterable<Topping> toppings = const [],
   }) {
     RealmObjectBase.set(this, 'id', id);
     RealmObjectBase.set(this, 'name', name);
@@ -258,6 +259,8 @@ class Product extends _Product with RealmEntity, RealmObjectBase, RealmObject {
     RealmObjectBase.set(this, 'img', img);
     RealmObjectBase.set(this, 'state', state);
     RealmObjectBase.set(this, 'category', category);
+    RealmObjectBase.set<RealmList<Topping>>(
+        this, 'toppings', RealmList<Topping>(toppings));
   }
 
   Product._();
@@ -302,6 +305,13 @@ class Product extends _Product with RealmEntity, RealmObjectBase, RealmObject {
       RealmObjectBase.set(this, 'category', value);
 
   @override
+  RealmList<Topping> get toppings =>
+      RealmObjectBase.get<Topping>(this, 'toppings') as RealmList<Topping>;
+  @override
+  set toppings(covariant RealmList<Topping> value) =>
+      throw RealmUnsupportedSetError();
+
+  @override
   RealmResults<Review> get reviews {
     if (!isManaged) {
       throw RealmError('Using backlinks is only possible for managed objects.');
@@ -333,6 +343,7 @@ class Product extends _Product with RealmEntity, RealmObjectBase, RealmObject {
       'img': img.toEJson(),
       'state': state.toEJson(),
       'category': category.toEJson(),
+      'toppings': toppings.toEJson(),
     };
   }
 
@@ -356,6 +367,7 @@ class Product extends _Product with RealmEntity, RealmObjectBase, RealmObject {
           fromEJson(img),
           fromEJson(state),
           category: fromEJson(ejson['category']),
+          toppings: fromEJson(ejson['toppings']),
         ),
       _ => raiseInvalidEJson(ejson),
     };
@@ -373,6 +385,8 @@ class Product extends _Product with RealmEntity, RealmObjectBase, RealmObject {
       SchemaProperty('state', RealmPropertyType.bool),
       SchemaProperty('category', RealmPropertyType.object,
           optional: true, linkTarget: 'Category'),
+      SchemaProperty('toppings', RealmPropertyType.object,
+          linkTarget: 'Topping', collectionType: RealmCollectionType.list),
       SchemaProperty('reviews', RealmPropertyType.linkingObjects,
           linkOriginProperty: 'product',
           collectionType: RealmCollectionType.list,
@@ -976,6 +990,261 @@ class Review extends _Review with RealmEntity, RealmObjectBase, RealmObject {
           optional: true, linkTarget: 'User'),
       SchemaProperty('product', RealmPropertyType.object,
           optional: true, linkTarget: 'Product'),
+    ]);
+  }();
+
+  @override
+  SchemaObject get objectSchema => RealmObjectBase.getSchema(this) ?? schema;
+}
+
+class Size extends _Size with RealmEntity, RealmObjectBase, RealmObject {
+  Size(
+    ObjectId id,
+    String name,
+    double price,
+  ) {
+    RealmObjectBase.set(this, 'id', id);
+    RealmObjectBase.set(this, 'name', name);
+    RealmObjectBase.set(this, 'price', price);
+  }
+
+  Size._();
+
+  @override
+  ObjectId get id => RealmObjectBase.get<ObjectId>(this, 'id') as ObjectId;
+  @override
+  set id(ObjectId value) => RealmObjectBase.set(this, 'id', value);
+
+  @override
+  String get name => RealmObjectBase.get<String>(this, 'name') as String;
+  @override
+  set name(String value) => RealmObjectBase.set(this, 'name', value);
+
+  @override
+  double get price => RealmObjectBase.get<double>(this, 'price') as double;
+  @override
+  set price(double value) => RealmObjectBase.set(this, 'price', value);
+
+  @override
+  Stream<RealmObjectChanges<Size>> get changes =>
+      RealmObjectBase.getChanges<Size>(this);
+
+  @override
+  Stream<RealmObjectChanges<Size>> changesFor([List<String>? keyPaths]) =>
+      RealmObjectBase.getChangesFor<Size>(this, keyPaths);
+
+  @override
+  Size freeze() => RealmObjectBase.freezeObject<Size>(this);
+
+  EJsonValue toEJson() {
+    return <String, dynamic>{
+      'id': id.toEJson(),
+      'name': name.toEJson(),
+      'price': price.toEJson(),
+    };
+  }
+
+  static EJsonValue _toEJson(Size value) => value.toEJson();
+  static Size _fromEJson(EJsonValue ejson) {
+    if (ejson is! Map<String, dynamic>) return raiseInvalidEJson(ejson);
+    return switch (ejson) {
+      {
+        'id': EJsonValue id,
+        'name': EJsonValue name,
+        'price': EJsonValue price,
+      } =>
+        Size(
+          fromEJson(id),
+          fromEJson(name),
+          fromEJson(price),
+        ),
+      _ => raiseInvalidEJson(ejson),
+    };
+  }
+
+  static final schema = () {
+    RealmObjectBase.registerFactory(Size._);
+    register(_toEJson, _fromEJson);
+    return const SchemaObject(ObjectType.realmObject, Size, 'Size', [
+      SchemaProperty('id', RealmPropertyType.objectid, primaryKey: true),
+      SchemaProperty('name', RealmPropertyType.string),
+      SchemaProperty('price', RealmPropertyType.double),
+    ]);
+  }();
+
+  @override
+  SchemaObject get objectSchema => RealmObjectBase.getSchema(this) ?? schema;
+}
+
+class Topping extends _Topping with RealmEntity, RealmObjectBase, RealmObject {
+  Topping(
+    ObjectId id,
+    String name,
+    double price,
+  ) {
+    RealmObjectBase.set(this, 'id', id);
+    RealmObjectBase.set(this, 'name', name);
+    RealmObjectBase.set(this, 'price', price);
+  }
+
+  Topping._();
+
+  @override
+  ObjectId get id => RealmObjectBase.get<ObjectId>(this, 'id') as ObjectId;
+  @override
+  set id(ObjectId value) => RealmObjectBase.set(this, 'id', value);
+
+  @override
+  String get name => RealmObjectBase.get<String>(this, 'name') as String;
+  @override
+  set name(String value) => RealmObjectBase.set(this, 'name', value);
+
+  @override
+  double get price => RealmObjectBase.get<double>(this, 'price') as double;
+  @override
+  set price(double value) => RealmObjectBase.set(this, 'price', value);
+
+  @override
+  Stream<RealmObjectChanges<Topping>> get changes =>
+      RealmObjectBase.getChanges<Topping>(this);
+
+  @override
+  Stream<RealmObjectChanges<Topping>> changesFor([List<String>? keyPaths]) =>
+      RealmObjectBase.getChangesFor<Topping>(this, keyPaths);
+
+  @override
+  Topping freeze() => RealmObjectBase.freezeObject<Topping>(this);
+
+  EJsonValue toEJson() {
+    return <String, dynamic>{
+      'id': id.toEJson(),
+      'name': name.toEJson(),
+      'price': price.toEJson(),
+    };
+  }
+
+  static EJsonValue _toEJson(Topping value) => value.toEJson();
+  static Topping _fromEJson(EJsonValue ejson) {
+    if (ejson is! Map<String, dynamic>) return raiseInvalidEJson(ejson);
+    return switch (ejson) {
+      {
+        'id': EJsonValue id,
+        'name': EJsonValue name,
+        'price': EJsonValue price,
+      } =>
+        Topping(
+          fromEJson(id),
+          fromEJson(name),
+          fromEJson(price),
+        ),
+      _ => raiseInvalidEJson(ejson),
+    };
+  }
+
+  static final schema = () {
+    RealmObjectBase.registerFactory(Topping._);
+    register(_toEJson, _fromEJson);
+    return const SchemaObject(ObjectType.realmObject, Topping, 'Topping', [
+      SchemaProperty('id', RealmPropertyType.objectid, primaryKey: true),
+      SchemaProperty('name', RealmPropertyType.string),
+      SchemaProperty('price', RealmPropertyType.double),
+    ]);
+  }();
+
+  @override
+  SchemaObject get objectSchema => RealmObjectBase.getSchema(this) ?? schema;
+}
+
+class ProductSize extends _ProductSize
+    with RealmEntity, RealmObjectBase, RealmObject {
+  ProductSize(
+    ObjectId id,
+    double additionalPrice, {
+    Product? product,
+    Size? size,
+  }) {
+    RealmObjectBase.set(this, 'id', id);
+    RealmObjectBase.set(this, 'product', product);
+    RealmObjectBase.set(this, 'size', size);
+    RealmObjectBase.set(this, 'additionalPrice', additionalPrice);
+  }
+
+  ProductSize._();
+
+  @override
+  ObjectId get id => RealmObjectBase.get<ObjectId>(this, 'id') as ObjectId;
+  @override
+  set id(ObjectId value) => RealmObjectBase.set(this, 'id', value);
+
+  @override
+  Product? get product =>
+      RealmObjectBase.get<Product>(this, 'product') as Product?;
+  @override
+  set product(covariant Product? value) =>
+      RealmObjectBase.set(this, 'product', value);
+
+  @override
+  Size? get size => RealmObjectBase.get<Size>(this, 'size') as Size?;
+  @override
+  set size(covariant Size? value) => RealmObjectBase.set(this, 'size', value);
+
+  @override
+  double get additionalPrice =>
+      RealmObjectBase.get<double>(this, 'additionalPrice') as double;
+  @override
+  set additionalPrice(double value) =>
+      RealmObjectBase.set(this, 'additionalPrice', value);
+
+  @override
+  Stream<RealmObjectChanges<ProductSize>> get changes =>
+      RealmObjectBase.getChanges<ProductSize>(this);
+
+  @override
+  Stream<RealmObjectChanges<ProductSize>> changesFor(
+          [List<String>? keyPaths]) =>
+      RealmObjectBase.getChangesFor<ProductSize>(this, keyPaths);
+
+  @override
+  ProductSize freeze() => RealmObjectBase.freezeObject<ProductSize>(this);
+
+  EJsonValue toEJson() {
+    return <String, dynamic>{
+      'id': id.toEJson(),
+      'product': product.toEJson(),
+      'size': size.toEJson(),
+      'additionalPrice': additionalPrice.toEJson(),
+    };
+  }
+
+  static EJsonValue _toEJson(ProductSize value) => value.toEJson();
+  static ProductSize _fromEJson(EJsonValue ejson) {
+    if (ejson is! Map<String, dynamic>) return raiseInvalidEJson(ejson);
+    return switch (ejson) {
+      {
+        'id': EJsonValue id,
+        'additionalPrice': EJsonValue additionalPrice,
+      } =>
+        ProductSize(
+          fromEJson(id),
+          fromEJson(additionalPrice),
+          product: fromEJson(ejson['product']),
+          size: fromEJson(ejson['size']),
+        ),
+      _ => raiseInvalidEJson(ejson),
+    };
+  }
+
+  static final schema = () {
+    RealmObjectBase.registerFactory(ProductSize._);
+    register(_toEJson, _fromEJson);
+    return const SchemaObject(
+        ObjectType.realmObject, ProductSize, 'ProductSize', [
+      SchemaProperty('id', RealmPropertyType.objectid, primaryKey: true),
+      SchemaProperty('product', RealmPropertyType.object,
+          optional: true, linkTarget: 'Product'),
+      SchemaProperty('size', RealmPropertyType.object,
+          optional: true, linkTarget: 'Size'),
+      SchemaProperty('additionalPrice', RealmPropertyType.double),
     ]);
   }();
 

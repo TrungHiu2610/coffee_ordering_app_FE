@@ -6,6 +6,7 @@ class ProductCard extends StatelessWidget {
   final String name;
   final double price;
   final VoidCallback onAdd;
+  final VoidCallback onTap;
 
   const ProductCard({
     super.key,
@@ -13,63 +14,67 @@ class ProductCard extends StatelessWidget {
     required this.name,
     required this.price,
     required this.onAdd,
+    required this.onTap
   });
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      elevation: 3,
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Ảnh món
-            ClipRRect(
-              borderRadius: BorderRadius.circular(8),
-              child: Image.asset(
-                imageUrl,
-                width: double.infinity,
-                height: 150,
-                fit: BoxFit.cover,
-              ),
-            ),
-
-            SizedBox(height: 8),
-
-            // Tên món
-            Text(
-              name,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-
-            Spacer(),
-
-            // Giá và nút +
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  "${price.toStringAsFixed(0)}đ",
-                  style: TextStyle(
-                    color: Colors.green[700],
-                    fontWeight: FontWeight.w600,
-                  ),
+    return InkWell(
+      onTap: onTap,
+      child: Card(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        elevation: 3,
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Ảnh món
+              ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: Image.asset(
+                  imageUrl,
+                  width: double.infinity,
+                  height: 150,
+                  fit: BoxFit.cover,
                 ),
-                IconButton(
-                  icon: Icon(Icons.add_circle, color: Colors.orange),
-                  onPressed: onAdd,
-                )
-              ],
-            )
-          ],
+              ),
+
+              SizedBox(height: 8),
+
+              // Tên món
+              Text(
+                name,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+
+              Spacer(),
+
+              // Giá và nút +
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    "${price.toStringAsFixed(0)}đ",
+                    style: TextStyle(
+                      color: Colors.green[700],
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.add_circle, color: Colors.orange),
+                    onPressed: onAdd,
+                  )
+                ],
+              )
+            ],
+          ),
         ),
-      ),
+      )
     );
   }
 }

@@ -12,6 +12,14 @@ void seedInitialData(RealmService realmService) {
     Category(ObjectId(), "Đá xay"),
   ];
 
+  final sizes = [
+    
+  ];
+
+  final toppings = [
+
+  ];
+
   final products = [
     Product(ObjectId(), "Cà phê sữa", 30000, "Cà phê phin sữa truyền thống", "cafe_sua.png", true, category: categories[0]),
     Product(ObjectId(), "Cà phê đen", 28000, "Cà phê phin đen đá", "cafe_den.png", true, category: categories[0]),
