@@ -12,3 +12,6 @@ part 'cart_item.dart';
 part 'invoice.dart';
 part 'invoice_item.dart';
 part 'review.dart';
+part 'size.dart';
+part 'topping.dart';
+part 'product_size.dart';

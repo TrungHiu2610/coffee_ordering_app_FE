@@ -1,10 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_coffee_shop_app/data/clear_data.dart';
 import 'package:flutter_coffee_shop_app/screens/demo_run.dart';
 import 'package:flutter_coffee_shop_app/screens/home/home_screen.dart';
 import 'package:flutter_coffee_shop_app/screens/layout.dart';
+import 'package:flutter_coffee_shop_app/services/realm.dart';
+
+import 'data/seed_data.dart';
 
 void main() {
-  runApp(const MyApp());
+    final realm = RealmService();
+
+    //seedInitialData(realm);
+    //clearData(realm);
+
+    runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {

@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_coffee_shop_app/screens/cart/cart_screen.dart';
 import 'package:flutter_coffee_shop_app/screens/home/home_screen.dart';
-import 'package:flutter_coffee_shop_app/screens/home/widgets/banner.dart';
-import 'package:flutter_coffee_shop_app/screens/home/widgets/product_card.dart';
 import 'package:flutter_coffee_shop_app/screens/widgets/appbar_home.dart';
 
 class LayoutScreen extends StatefulWidget {
@@ -26,6 +24,9 @@ class LayoutScreenState extends State<LayoutScreen> {
       body: bodyContent,
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: Color(0xFF124258),
+        selectedItemColor: Colors.white,
+        unselectedItemColor: Colors.white70,
+        type: BottomNavigationBarType.fixed,
         onTap: (index){
           setState(()
           {

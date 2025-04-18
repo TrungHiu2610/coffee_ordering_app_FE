@@ -1,7 +1,11 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_coffee_shop_app/models/models.dart' as model;
+import 'package:flutter_coffee_shop_app/screens/home/product_detail.dart';
 import 'package:flutter_coffee_shop_app/screens/home/widgets/banner.dart';
 import 'package:flutter_coffee_shop_app/screens/home/widgets/product_card.dart';
+import 'package:flutter_coffee_shop_app/services/realm.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -14,36 +18,53 @@ class HomeScreenState extends State<HomeScreen> {
   int selectedCategoryIndex = 0;
   int selectedBottomBarIndex = 0;
 
-  final List<String> categories = ['Tất cả', 'Cà phê', 'Trà sữa', 'Sinh tố'];
+  late List<model.Category> categories = [];
+  late List<model.Product> products = [];
 
-  // Giả lập danh sách món
-  final List<Drink> allDrinks = [
-    Drink(name: 'Cà phê sữa', category: 'Cà phê'),
-    Drink(name: 'Trà sữa truyền thống', category: 'Trà sữa'),
-    Drink(name: 'Sinh tố xoài', category: 'Sinh tố'),
-  ];
-
-  // Giả lập danh sách banner
+  //danh sách banner
   final List<String> imgList = [
     'assets/images/banner_1.png',
     'assets/images/banner_2.png',
     'assets/images/banner_3.png',
   ];
 
+  late RealmService realmService;
+
+  @override
+  void initState() {
+    super.initState();
+
+    realmService = RealmService();
+    loadDataFromRealm();
+  }
+
+  void loadDataFromRealm()
+  {
+    final allProducts = realmService.realm.all<model.Product>();
+    final allCategories = realmService.realm.all<model.Category>();
+
+    setState(() {
+      products = allProducts.toList();
+      categories = allCategories.toList();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    String selectedCategory = categories[selectedCategoryIndex];
+    String selectedCategory = (selectedCategoryIndex == 0 || categories.isEmpty)
+        ? 'Tất cả'
+        : categories[selectedCategoryIndex-1].name;
 
-    List<Drink> filteredDrinks = selectedCategory == 'Tất cả'
-        ? allDrinks
-        : allDrinks.where((d) => d.category == selectedCategory).toList();
+    List<model.Product> filteredProducts = selectedCategory == 'Tất cả'
+        ? products
+        : products.where((d) => d.category?.name == selectedCategory).toList();
 
     return Column(
       children: [
         SizedBox(height: 12),
 
         // Banner quảng cáo
-        // BannerCarousel(imgList:imgList),
+        BannerCarousel(imgList:imgList),
 
         SizedBox(height: 24),
 
@@ -68,12 +89,13 @@ class HomeScreenState extends State<HomeScreen> {
           height: 50,
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
-            itemCount: categories.length,
+            itemCount: categories.length + 1,
             itemBuilder: (context, index) {
+              final label = index == 0 ? 'Tất cả' : categories[index - 1].name;
               return Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 4),
                 child: ChoiceChip(
-                  label: Text(categories[index]),
+                  label: Text(label),
                   selected: selectedCategoryIndex == index,
                   onSelected: (_) {
                     setState(() {
@@ -85,10 +107,12 @@ class HomeScreenState extends State<HomeScreen> {
             },
           ),
         ),
+
+
         // Danh sách đồ uống
         Expanded(
           child: GridView.builder(
-            itemCount: filteredDrinks.length,
+            itemCount: filteredProducts.length,
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2,
                 mainAxisSpacing: 5,
@@ -97,14 +121,22 @@ class HomeScreenState extends State<HomeScreen> {
             ),
             itemBuilder: (context, index) {
               return ProductCard(
-                  imageUrl: 'assets/images/' + filteredDrinks
-                      .elementAt(index)
-                      .name + '.png',
-                  name: filteredDrinks
+                // tạm thời cho giống nhau hết
+                  imageUrl: 'assets/images/Cà phê sữa.png',
+                  name: filteredProducts
                       .elementAt(index)
                       .name,
-                  price: 45000,
-                  onAdd: () {}
+                  price: filteredProducts.elementAt(index).price,
+                onTap: (){
+                    final product = filteredProducts.elementAt(index);
+                    List<model.ProductSize> productSizes = realmService.realm.all<model.ProductSize>().where((x)=>x.product?.id == product.id).toList();
+                    List<model.Topping> toppings = realmService.realm.all<model.Topping>().toList();
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => ProductDetail(product: filteredProducts.elementAt(index), productSizes: productSizes, toppings: toppings)
+                        )
+                    );
+                }
               );
             },
           ),
@@ -112,11 +144,4 @@ class HomeScreenState extends State<HomeScreen> {
       ],
     );
   }
-}
-// Model đơn giản
-class Drink {
-  final String name;
-  final String category;
-
-  Drink({required this.name, required this.category});
 }
