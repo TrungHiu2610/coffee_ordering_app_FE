@@ -18,8 +18,9 @@ class RealmService
       Review.schema,
       User.schema,
       Size.schema,
-      Topping.schema
-    ], schemaVersion: 2);
+      Topping.schema,
+      ProductSize.schema
+    ], schemaVersion: 3);
 
     this._realm = Realm(config);
   }

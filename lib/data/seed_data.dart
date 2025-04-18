@@ -13,11 +13,17 @@ void seedInitialData(RealmService realmService) {
   ];
 
   final sizes = [
-    
+    Size(ObjectId(),"S"),
+    Size(ObjectId(),"M"),
+    Size(ObjectId(),"L"),
+    Size(ObjectId(),"XL"),
   ];
 
   final toppings = [
-
+    Topping(ObjectId(), "Trân châu", 5000),
+    Topping(ObjectId(), "Bánh Flan", 10000),
+    Topping(ObjectId(), "1 shot expresso", 13000),
+    Topping(ObjectId(), "Phô mai viên", 3000)
   ];
 
   final products = [
@@ -46,8 +52,20 @@ void seedInitialData(RealmService realmService) {
     Product(ObjectId(), "Đá xay việt quất", 49000, "Việt quất mát lạnh", "da_xay_viet_quat.png", true, category: categories[3]),
   ];
 
+  final productSizes = [
+    ProductSize(ObjectId(), 0, product: products[0], size: sizes[0]), // Cà phê sữa size S
+    ProductSize(ObjectId(), 10000, product: products[0], size: sizes[1]), // Cà phê sữa size M
+    ProductSize(ObjectId(), 15000, product: products[0], size: sizes[2]), // Cà phê sữa size L
+
+    ProductSize(ObjectId(), 0, product: products[6], size: sizes[2]), // Trà sữa matcha size L
+    ProductSize(ObjectId(), 12000, product: products[6], size: sizes[3]), // Trà sữa matcha size XL
+  ];
+
   realmService.realm.write(() {
     categories.forEach(realmService.realm.add);
+    sizes.forEach(realmService.realm.add);
+    toppings.forEach(realmService.realm.add);
     products.forEach(realmService.realm.add);
+    productSizes.forEach(realmService.realm.add);
   });
 }

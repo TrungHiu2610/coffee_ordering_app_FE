@@ -127,11 +127,13 @@ class HomeScreenState extends State<HomeScreen> {
                       .elementAt(index)
                       .name,
                   price: filteredProducts.elementAt(index).price,
-                  onAdd: () {},
                 onTap: (){
+                    final product = filteredProducts.elementAt(index);
+                    List<model.ProductSize> productSizes = realmService.realm.all<model.ProductSize>().where((x)=>x.product?.id == product.id).toList();
+                    List<model.Topping> toppings = realmService.realm.all<model.Topping>().toList();
                     Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (_) => ProductDetail()
+                        MaterialPageRoute(builder: (_) => ProductDetail(product: filteredProducts.elementAt(index), productSizes: productSizes, toppings: toppings)
                         )
                     );
                 }

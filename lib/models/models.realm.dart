@@ -1001,11 +1001,9 @@ class Size extends _Size with RealmEntity, RealmObjectBase, RealmObject {
   Size(
     ObjectId id,
     String name,
-    double price,
   ) {
     RealmObjectBase.set(this, 'id', id);
     RealmObjectBase.set(this, 'name', name);
-    RealmObjectBase.set(this, 'price', price);
   }
 
   Size._();
@@ -1019,11 +1017,6 @@ class Size extends _Size with RealmEntity, RealmObjectBase, RealmObject {
   String get name => RealmObjectBase.get<String>(this, 'name') as String;
   @override
   set name(String value) => RealmObjectBase.set(this, 'name', value);
-
-  @override
-  double get price => RealmObjectBase.get<double>(this, 'price') as double;
-  @override
-  set price(double value) => RealmObjectBase.set(this, 'price', value);
 
   @override
   Stream<RealmObjectChanges<Size>> get changes =>
@@ -1040,7 +1033,6 @@ class Size extends _Size with RealmEntity, RealmObjectBase, RealmObject {
     return <String, dynamic>{
       'id': id.toEJson(),
       'name': name.toEJson(),
-      'price': price.toEJson(),
     };
   }
 
@@ -1051,12 +1043,10 @@ class Size extends _Size with RealmEntity, RealmObjectBase, RealmObject {
       {
         'id': EJsonValue id,
         'name': EJsonValue name,
-        'price': EJsonValue price,
       } =>
         Size(
           fromEJson(id),
           fromEJson(name),
-          fromEJson(price),
         ),
       _ => raiseInvalidEJson(ejson),
     };
@@ -1068,7 +1058,6 @@ class Size extends _Size with RealmEntity, RealmObjectBase, RealmObject {
     return const SchemaObject(ObjectType.realmObject, Size, 'Size', [
       SchemaProperty('id', RealmPropertyType.objectid, primaryKey: true),
       SchemaProperty('name', RealmPropertyType.string),
-      SchemaProperty('price', RealmPropertyType.double),
     ]);
   }();
 

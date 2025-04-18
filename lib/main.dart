@@ -13,7 +13,7 @@ void main() {
     //seedInitialData(realm);
     //clearData(realm);
 
-    //runApp(MyApp());
+    runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {

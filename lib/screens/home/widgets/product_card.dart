@@ -5,7 +5,6 @@ class ProductCard extends StatelessWidget {
   final String imageUrl;
   final String name;
   final double price;
-  final VoidCallback onAdd;
   final VoidCallback onTap;
 
   const ProductCard({
@@ -13,7 +12,6 @@ class ProductCard extends StatelessWidget {
     required this.imageUrl,
     required this.name,
     required this.price,
-    required this.onAdd,
     required this.onTap
   });
 
@@ -67,7 +65,7 @@ class ProductCard extends StatelessWidget {
                   ),
                   IconButton(
                     icon: Icon(Icons.add_circle, color: Colors.orange),
-                    onPressed: onAdd,
+                    onPressed: (){},
                   )
                 ],
               )

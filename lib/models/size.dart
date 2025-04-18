@@ -6,5 +6,4 @@ class _Size {
   late ObjectId id;
 
   late String name;
-  late double price;
 }
