@@ -3,6 +3,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_coffee_shop_app/extensions/CartItem_TotalPrice.dart';
 import 'package:flutter_coffee_shop_app/models/models.dart';
 import 'package:flutter_coffee_shop_app/screens/layout.dart';
+import 'package:flutter_coffee_shop_app/screens/payment/payment_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:realm/realm.dart';
 
@@ -159,7 +160,12 @@ class CartScreenState extends State<CartScreen> {
 
           // thanh toán
           ElevatedButton(
-            onPressed: () {},
+            onPressed: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => PaymentScreen())
+              );
+            },
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.cyan,
               shape: RoundedRectangleBorder(
