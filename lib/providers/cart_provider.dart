@@ -1,31 +1,19 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_coffee_shop_app/extensions/CartItem_TotalPrice.dart';
+import 'package:flutter_coffee_shop_app/services/realm.dart';
 import 'package:realm/realm.dart';
 
 import '../models/models.dart';
 
 class CartProvider with ChangeNotifier {
-  final Realm realm;
-  final ObjectId userId;
-
   Cart? _currentCart;
 
-  CartProvider({required this.realm, required this.userId}) {
-    _loadCart();
+  CartProvider() {
+    _currentCart = RealmService().currentCart;
   }
 
-  Cart? get cart => _currentCart;
-
-  void _loadCart() {
-    _currentCart = realm
-        .all<Cart>()
-        .query('user.id == \$0 SORT(createTime DESC)', [userId])
-        .firstOrNull;
-    notifyListeners();
-  }
-
-  void refreshCart() => _loadCart();
+  int get itemCount => _currentCart?.cartItems.length ?? 0;
 
   double get totalPrice {
     if (_currentCart == null) return 0;
@@ -41,13 +29,7 @@ class CartProvider with ChangeNotifier {
     int quantity = 1,
     String description = '',
   }) {
-    realm.write(() {
-      if (_currentCart == null) {
-        _currentCart = realm.add(Cart(
-          ObjectId(), DateTime.now(),user: realm.find<User>(userId)!
-        ));
-      }
-
+    RealmService().realm.write(() {
       // kiểm tra trùng sp, size và các topping
       final existingItem = _currentCart!.cartItems.firstWhereOrNull(
             (item) =>
@@ -71,7 +53,7 @@ class CartProvider with ChangeNotifier {
           productSize: productSize,
           toppings: toppings,
         );
-        realm.add(newItem); // thêm vào realm, không cần add vào cartItems
+        RealmService().realm.add(newItem); // thêm vào realm, không cần add vào cartItems
       }
     });
 
@@ -87,7 +69,7 @@ class CartProvider with ChangeNotifier {
   }
 
   void increaseQuantity(CartItem item) {
-    realm.write((){
+    RealmService().realm.write((){
       item.quantity++;
     });
     notifyListeners();
@@ -95,7 +77,7 @@ class CartProvider with ChangeNotifier {
 
   void decreaseQuantity(CartItem item) {
     if (item.quantity > 1) {
-      realm.write((){
+      RealmService().realm.write((){
         item.quantity--;
       });
       notifyListeners();
@@ -105,21 +87,19 @@ class CartProvider with ChangeNotifier {
   }
 
   void removeItem(CartItem item) {
-    realm.write((){
-      realm.delete(item);
+    RealmService().realm.write((){
+      RealmService().realm.delete(item);
     });
     notifyListeners();
   }
 
   void clearCart() {
-    if (_currentCart == null) return;
+    _currentCart = null;
+    notifyListeners();
+  }
 
-    realm.write(() {
-      for (final item in _currentCart!.cartItems) {
-        realm.delete(item);
-      }
-    });
-
+  void loadCartForUser() {
+    _currentCart = RealmService().currentCart;
     notifyListeners();
   }
 }

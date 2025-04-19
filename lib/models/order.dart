@@ -7,6 +7,7 @@ class _Order {
 
   late DateTime createdAt;
   late String status; // chờ thanh toán, chờ xác nhận, chờ lấy nước, hoàn tất...
+  late String paymenMethod;
 
   late _User? customer;
   late List<_OrderItem> items;

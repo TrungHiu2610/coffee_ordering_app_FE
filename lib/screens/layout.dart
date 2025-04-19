@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_coffee_shop_app/screens/cart/cart_screen.dart';
 import 'package:flutter_coffee_shop_app/screens/home/home_screen.dart';
+import 'package:flutter_coffee_shop_app/screens/profile/profile_screen.dart';
 import 'package:flutter_coffee_shop_app/screens/widgets/appbar_home.dart';
 import 'package:provider/provider.dart';
 
@@ -43,6 +44,9 @@ class LayoutScreenState extends State<LayoutScreen> {
                 final cartProvider = Provider.of<CartProvider>(context, listen: false);
                 cartProvider.clearCart();
                 bodyContent = HomeScreen();
+                break;
+              case 3:
+                bodyContent = ProfileScreen();
                 break;
             }
           });

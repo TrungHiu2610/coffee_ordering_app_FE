@@ -17,4 +17,7 @@ class _User{
   
   @Backlink(#user)
   late Iterable<_Review> reviews;
+
+  @Backlink(#customer)
+  late Iterable<_Order> orders;
 }

@@ -4,6 +4,7 @@ import 'package:flutter_coffee_shop_app/extensions/CartItem_TotalPrice.dart';
 import 'package:flutter_coffee_shop_app/models/models.dart';
 import 'package:flutter_coffee_shop_app/screens/layout.dart';
 import 'package:flutter_coffee_shop_app/screens/payment/payment_screen.dart';
+import 'package:flutter_coffee_shop_app/services/realm.dart';
 import 'package:provider/provider.dart';
 import 'package:realm/realm.dart';
 
@@ -18,6 +19,34 @@ class CartScreen extends StatefulWidget
 }
 
 class CartScreenState extends State<CartScreen> {
+
+  late CartProvider cartProvider;
+  late RealmService realmService;
+  late User? user;
+  late Cart? cart;
+  late List<CartItem> cartItems;
+
+  @override
+  void initState() {
+    super.initState();
+    loadCartFromRealm();
+  }
+
+  void loadCartFromRealm()
+  {
+    user = RealmService().currentUser;
+    cart = RealmService().currentCart;
+    if(cart!.cartItems.isNotEmpty)
+      {
+        setState(() {
+          cartItems = cart!.cartItems.toList();
+        });
+      }
+    else
+      {
+        cartItems=[];
+      }
+  }
 
   String printToppings(RealmList<Topping> toppings) {
     if (toppings.isEmpty) return "Toppings: None";
@@ -41,6 +70,7 @@ class CartScreenState extends State<CartScreen> {
             }, child: Text("Không")),
             TextButton(onPressed: (){
               cartProvider.removeItem(item);
+              loadCartFromRealm();
               Navigator.pop(context);
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(content: Text("Đã xóa sản phẩm ra khỏi giỏ hàng")),
@@ -53,11 +83,7 @@ class CartScreenState extends State<CartScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final cartProvider = Provider.of<CartProvider>(context);
-    final cart = cartProvider.cart;
-
-    final cartItems = cart?.cartItems.toList();
-
+    cartProvider = Provider.of<CartProvider>(context);
     return Scaffold(
       appBar: AppBar(
           title: Text(
@@ -78,7 +104,7 @@ class CartScreenState extends State<CartScreen> {
           icon: Icon(Icons.arrow_back),
         ),
       ),
-      body: cartItems!.isEmpty
+      body: cartItems.isEmpty
           ? Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_coffee_shop_app/extensions/CartItem_TotalPrice.dart';
 import 'package:flutter_coffee_shop_app/models/models.dart';
 import 'package:flutter_coffee_shop_app/providers/cart_provider.dart';
+import 'package:flutter_coffee_shop_app/screens/order/order_screen.dart';
+import 'package:flutter_coffee_shop_app/services/realm.dart';
 import 'package:provider/provider.dart';
 import 'package:realm/realm.dart';
 
@@ -16,7 +18,7 @@ class PaymentScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cartProvider = Provider.of<CartProvider>(context);
-    final cartItems = cartProvider.cart?.cartItems.toList() ?? [];
+    final cartItems = RealmService().currentCart?.cartItems.toList() ?? [];
 
     final total = cartProvider.totalPrice;
     final discount = 0.0;
@@ -111,6 +113,49 @@ class PaymentScreen extends StatelessWidget {
                 SizedBox(height: 12),
                 ElevatedButton(
                   onPressed: () {
+                    final realmService = RealmService();
+                    final realm = realmService.realm;
+                    final cart = RealmService().currentCart;
+                    if (cart == null || cart.cartItems.isEmpty) return;
+
+                    final newOrder = Order(
+                        ObjectId(),
+                        DateTime.now(),
+                        "Chờ quán xác nhận",
+                        "Tại quầy",
+                        customer: RealmService().getCurrentUser(),
+                        items: []
+                    );
+
+                    final newOrderItems = cart.cartItems.map((item) {
+                      return OrderItem(
+                        ObjectId(),
+                        item.quantity,
+                        item.description,
+                        "Chờ xác nhận",
+                        product: item.product,
+                        productSize: item.productSize,
+                        toppings: item.toppings,
+                        order: newOrder
+                      );
+                    }).toList();
+
+                    newOrder.items.addAll(newOrderItems);
+
+                    realm.write(() {
+                      realm.add(newOrder);
+                    });
+
+                    cartProvider.clearCart();
+
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text("Đơn hàng đã được gửi")),
+                    );
+
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => OrderDetailScreen(order: newOrder))
+                    );
 
                     // bên phía khách hàng:
                     // clear giỏ hàng
@@ -128,11 +173,6 @@ class PaymentScreen extends StatelessWidget {
                     // khi nhân viên bấm xác nhận thì trạng thái xử lý của các sản phẩm trong đơn vừa đặt bên máy của khách hàng là đã xác nhận
                     // nếu khách hàng đặt tiếp món khác thì cũng xem chi tiết đơn, rồi bấm xác nhận.
                     // sau khi làm nước xong, sẽ bấm hòan thành đơn hàng, lúc này máy khách sẽ được thông báo và cập nhật trạng thái xử lý là chờ lấy nước
-
-                    // TODO: Xử lý xác nhận đơn hàng
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text("Đã chọn thanh toán tại quầy")),
-                    );
                   },
                   child: Text("Xác nhận (Thanh toán tại quầy)"),
                   style: ElevatedButton.styleFrom(

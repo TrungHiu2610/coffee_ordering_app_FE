@@ -85,6 +85,18 @@ class User extends _User with RealmEntity, RealmObjectBase, RealmObject {
       throw RealmUnsupportedSetError();
 
   @override
+  RealmResults<Order> get orders {
+    if (!isManaged) {
+      throw RealmError('Using backlinks is only possible for managed objects.');
+    }
+    return RealmObjectBase.get<Order>(this, 'orders') as RealmResults<Order>;
+  }
+
+  @override
+  set orders(covariant RealmResults<Order> value) =>
+      throw RealmUnsupportedSetError();
+
+  @override
   Stream<RealmObjectChanges<User>> get changes =>
       RealmObjectBase.getChanges<User>(this);
 
@@ -148,6 +160,10 @@ class User extends _User with RealmEntity, RealmObjectBase, RealmObject {
           linkOriginProperty: 'user',
           collectionType: RealmCollectionType.list,
           linkTarget: 'Review'),
+      SchemaProperty('orders', RealmPropertyType.linkingObjects,
+          linkOriginProperty: 'customer',
+          collectionType: RealmCollectionType.list,
+          linkTarget: 'Order'),
     ]);
   }();
 
@@ -1272,13 +1288,15 @@ class Order extends _Order with RealmEntity, RealmObjectBase, RealmObject {
   Order(
     ObjectId id,
     DateTime createdAt,
-    String status, {
+    String status,
+    String paymenMethod, {
     User? customer,
     Iterable<OrderItem> items = const [],
   }) {
     RealmObjectBase.set(this, 'id', id);
     RealmObjectBase.set(this, 'createdAt', createdAt);
     RealmObjectBase.set(this, 'status', status);
+    RealmObjectBase.set(this, 'paymenMethod', paymenMethod);
     RealmObjectBase.set(this, 'customer', customer);
     RealmObjectBase.set<RealmList<OrderItem>>(
         this, 'items', RealmList<OrderItem>(items));
@@ -1302,6 +1320,13 @@ class Order extends _Order with RealmEntity, RealmObjectBase, RealmObject {
   String get status => RealmObjectBase.get<String>(this, 'status') as String;
   @override
   set status(String value) => RealmObjectBase.set(this, 'status', value);
+
+  @override
+  String get paymenMethod =>
+      RealmObjectBase.get<String>(this, 'paymenMethod') as String;
+  @override
+  set paymenMethod(String value) =>
+      RealmObjectBase.set(this, 'paymenMethod', value);
 
   @override
   User? get customer => RealmObjectBase.get<User>(this, 'customer') as User?;
@@ -1332,6 +1357,7 @@ class Order extends _Order with RealmEntity, RealmObjectBase, RealmObject {
       'id': id.toEJson(),
       'createdAt': createdAt.toEJson(),
       'status': status.toEJson(),
+      'paymenMethod': paymenMethod.toEJson(),
       'customer': customer.toEJson(),
       'items': items.toEJson(),
     };
@@ -1345,11 +1371,13 @@ class Order extends _Order with RealmEntity, RealmObjectBase, RealmObject {
         'id': EJsonValue id,
         'createdAt': EJsonValue createdAt,
         'status': EJsonValue status,
+        'paymenMethod': EJsonValue paymenMethod,
       } =>
         Order(
           fromEJson(id),
           fromEJson(createdAt),
           fromEJson(status),
+          fromEJson(paymenMethod),
           customer: fromEJson(ejson['customer']),
           items: fromEJson(ejson['items']),
         ),
@@ -1364,6 +1392,7 @@ class Order extends _Order with RealmEntity, RealmObjectBase, RealmObject {
       SchemaProperty('id', RealmPropertyType.objectid, primaryKey: true),
       SchemaProperty('createdAt', RealmPropertyType.timestamp),
       SchemaProperty('status', RealmPropertyType.string),
+      SchemaProperty('paymenMethod', RealmPropertyType.string),
       SchemaProperty('customer', RealmPropertyType.object,
           optional: true, linkTarget: 'User'),
       SchemaProperty('items', RealmPropertyType.object,
