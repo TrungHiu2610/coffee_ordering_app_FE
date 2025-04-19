@@ -1267,3 +1267,253 @@ class ProductSize extends _ProductSize
   @override
   SchemaObject get objectSchema => RealmObjectBase.getSchema(this) ?? schema;
 }
+
+class Order extends _Order with RealmEntity, RealmObjectBase, RealmObject {
+  Order(
+    ObjectId id,
+    DateTime createdAt,
+    String status, {
+    User? customer,
+    Iterable<OrderItem> items = const [],
+  }) {
+    RealmObjectBase.set(this, 'id', id);
+    RealmObjectBase.set(this, 'createdAt', createdAt);
+    RealmObjectBase.set(this, 'status', status);
+    RealmObjectBase.set(this, 'customer', customer);
+    RealmObjectBase.set<RealmList<OrderItem>>(
+        this, 'items', RealmList<OrderItem>(items));
+  }
+
+  Order._();
+
+  @override
+  ObjectId get id => RealmObjectBase.get<ObjectId>(this, 'id') as ObjectId;
+  @override
+  set id(ObjectId value) => RealmObjectBase.set(this, 'id', value);
+
+  @override
+  DateTime get createdAt =>
+      RealmObjectBase.get<DateTime>(this, 'createdAt') as DateTime;
+  @override
+  set createdAt(DateTime value) =>
+      RealmObjectBase.set(this, 'createdAt', value);
+
+  @override
+  String get status => RealmObjectBase.get<String>(this, 'status') as String;
+  @override
+  set status(String value) => RealmObjectBase.set(this, 'status', value);
+
+  @override
+  User? get customer => RealmObjectBase.get<User>(this, 'customer') as User?;
+  @override
+  set customer(covariant User? value) =>
+      RealmObjectBase.set(this, 'customer', value);
+
+  @override
+  RealmList<OrderItem> get items =>
+      RealmObjectBase.get<OrderItem>(this, 'items') as RealmList<OrderItem>;
+  @override
+  set items(covariant RealmList<OrderItem> value) =>
+      throw RealmUnsupportedSetError();
+
+  @override
+  Stream<RealmObjectChanges<Order>> get changes =>
+      RealmObjectBase.getChanges<Order>(this);
+
+  @override
+  Stream<RealmObjectChanges<Order>> changesFor([List<String>? keyPaths]) =>
+      RealmObjectBase.getChangesFor<Order>(this, keyPaths);
+
+  @override
+  Order freeze() => RealmObjectBase.freezeObject<Order>(this);
+
+  EJsonValue toEJson() {
+    return <String, dynamic>{
+      'id': id.toEJson(),
+      'createdAt': createdAt.toEJson(),
+      'status': status.toEJson(),
+      'customer': customer.toEJson(),
+      'items': items.toEJson(),
+    };
+  }
+
+  static EJsonValue _toEJson(Order value) => value.toEJson();
+  static Order _fromEJson(EJsonValue ejson) {
+    if (ejson is! Map<String, dynamic>) return raiseInvalidEJson(ejson);
+    return switch (ejson) {
+      {
+        'id': EJsonValue id,
+        'createdAt': EJsonValue createdAt,
+        'status': EJsonValue status,
+      } =>
+        Order(
+          fromEJson(id),
+          fromEJson(createdAt),
+          fromEJson(status),
+          customer: fromEJson(ejson['customer']),
+          items: fromEJson(ejson['items']),
+        ),
+      _ => raiseInvalidEJson(ejson),
+    };
+  }
+
+  static final schema = () {
+    RealmObjectBase.registerFactory(Order._);
+    register(_toEJson, _fromEJson);
+    return const SchemaObject(ObjectType.realmObject, Order, 'Order', [
+      SchemaProperty('id', RealmPropertyType.objectid, primaryKey: true),
+      SchemaProperty('createdAt', RealmPropertyType.timestamp),
+      SchemaProperty('status', RealmPropertyType.string),
+      SchemaProperty('customer', RealmPropertyType.object,
+          optional: true, linkTarget: 'User'),
+      SchemaProperty('items', RealmPropertyType.object,
+          linkTarget: 'OrderItem', collectionType: RealmCollectionType.list),
+    ]);
+  }();
+
+  @override
+  SchemaObject get objectSchema => RealmObjectBase.getSchema(this) ?? schema;
+}
+
+class OrderItem extends _OrderItem
+    with RealmEntity, RealmObjectBase, RealmObject {
+  OrderItem(
+    ObjectId id,
+    int quantity,
+    String note,
+    String status, {
+    Product? product,
+    ProductSize? productSize,
+    Iterable<Topping> toppings = const [],
+    Order? order,
+  }) {
+    RealmObjectBase.set(this, 'id', id);
+    RealmObjectBase.set(this, 'product', product);
+    RealmObjectBase.set(this, 'productSize', productSize);
+    RealmObjectBase.set<RealmList<Topping>>(
+        this, 'toppings', RealmList<Topping>(toppings));
+    RealmObjectBase.set(this, 'quantity', quantity);
+    RealmObjectBase.set(this, 'note', note);
+    RealmObjectBase.set(this, 'status', status);
+    RealmObjectBase.set(this, 'order', order);
+  }
+
+  OrderItem._();
+
+  @override
+  ObjectId get id => RealmObjectBase.get<ObjectId>(this, 'id') as ObjectId;
+  @override
+  set id(ObjectId value) => RealmObjectBase.set(this, 'id', value);
+
+  @override
+  Product? get product =>
+      RealmObjectBase.get<Product>(this, 'product') as Product?;
+  @override
+  set product(covariant Product? value) =>
+      RealmObjectBase.set(this, 'product', value);
+
+  @override
+  ProductSize? get productSize =>
+      RealmObjectBase.get<ProductSize>(this, 'productSize') as ProductSize?;
+  @override
+  set productSize(covariant ProductSize? value) =>
+      RealmObjectBase.set(this, 'productSize', value);
+
+  @override
+  RealmList<Topping> get toppings =>
+      RealmObjectBase.get<Topping>(this, 'toppings') as RealmList<Topping>;
+  @override
+  set toppings(covariant RealmList<Topping> value) =>
+      throw RealmUnsupportedSetError();
+
+  @override
+  int get quantity => RealmObjectBase.get<int>(this, 'quantity') as int;
+  @override
+  set quantity(int value) => RealmObjectBase.set(this, 'quantity', value);
+
+  @override
+  String get note => RealmObjectBase.get<String>(this, 'note') as String;
+  @override
+  set note(String value) => RealmObjectBase.set(this, 'note', value);
+
+  @override
+  String get status => RealmObjectBase.get<String>(this, 'status') as String;
+  @override
+  set status(String value) => RealmObjectBase.set(this, 'status', value);
+
+  @override
+  Order? get order => RealmObjectBase.get<Order>(this, 'order') as Order?;
+  @override
+  set order(covariant Order? value) =>
+      RealmObjectBase.set(this, 'order', value);
+
+  @override
+  Stream<RealmObjectChanges<OrderItem>> get changes =>
+      RealmObjectBase.getChanges<OrderItem>(this);
+
+  @override
+  Stream<RealmObjectChanges<OrderItem>> changesFor([List<String>? keyPaths]) =>
+      RealmObjectBase.getChangesFor<OrderItem>(this, keyPaths);
+
+  @override
+  OrderItem freeze() => RealmObjectBase.freezeObject<OrderItem>(this);
+
+  EJsonValue toEJson() {
+    return <String, dynamic>{
+      'id': id.toEJson(),
+      'product': product.toEJson(),
+      'productSize': productSize.toEJson(),
+      'toppings': toppings.toEJson(),
+      'quantity': quantity.toEJson(),
+      'note': note.toEJson(),
+      'status': status.toEJson(),
+      'order': order.toEJson(),
+    };
+  }
+
+  static EJsonValue _toEJson(OrderItem value) => value.toEJson();
+  static OrderItem _fromEJson(EJsonValue ejson) {
+    if (ejson is! Map<String, dynamic>) return raiseInvalidEJson(ejson);
+    return switch (ejson) {
+      {
+        'id': EJsonValue id,
+        'quantity': EJsonValue quantity,
+        'note': EJsonValue note,
+        'status': EJsonValue status,
+      } =>
+        OrderItem(
+          fromEJson(id),
+          fromEJson(quantity),
+          fromEJson(note),
+          fromEJson(status),
+          product: fromEJson(ejson['product']),
+          productSize: fromEJson(ejson['productSize']),
+          toppings: fromEJson(ejson['toppings']),
+          order: fromEJson(ejson['order']),
+        ),
+      _ => raiseInvalidEJson(ejson),
+    };
+  }
+
+  static final schema = () {
+    RealmObjectBase.registerFactory(OrderItem._);
+    register(_toEJson, _fromEJson);
+    return const SchemaObject(ObjectType.realmObject, OrderItem, 'OrderItem', [
+      SchemaProperty('id', RealmPropertyType.objectid, primaryKey: true),
+      SchemaProperty('product', RealmPropertyType.object,
+          optional: true, linkTarget: 'Product'),
+      SchemaProperty('productSize', RealmPropertyType.object,
+          optional: true, linkTarget: 'ProductSize'),
+      SchemaProperty('toppings', RealmPropertyType.object,
+          linkTarget: 'Topping', collectionType: RealmCollectionType.list),
+      SchemaProperty('quantity', RealmPropertyType.int),
+      SchemaProperty('note', RealmPropertyType.string),
+      SchemaProperty('status', RealmPropertyType.string),
+      SchemaProperty('order', RealmPropertyType.object,
+          optional: true, linkTarget: 'Order'),
+    ]);
+  }();
+
+  @override
+  SchemaObject get objectSchema => RealmObjectBase.getSchema(this) ?? schema;
+}

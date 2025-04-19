@@ -3,7 +3,11 @@ import 'package:realm/realm.dart';
 import '../models/models.dart';
 
 void seedInitialData(RealmService realmService) {
-  if (realmService.realm.all<Category>().isNotEmpty) return; // đã có dữ liệu thì bỏ qua
+  // đã có dữ liệu thì bỏ qua
+  if (realmService.realm.all<Category>().isNotEmpty) {
+    print("Đã có dữ liệu");
+    return;
+  }
 
   final categories = [
     Category(ObjectId(), "Cà phê"),
@@ -68,4 +72,6 @@ void seedInitialData(RealmService realmService) {
     products.forEach(realmService.realm.add);
     productSizes.forEach(realmService.realm.add);
   });
+
+  print("Đã tạo data mẫu");
 }

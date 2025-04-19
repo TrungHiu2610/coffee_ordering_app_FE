@@ -15,3 +15,5 @@ part 'review.dart';
 part 'size.dart';
 part 'topping.dart';
 part 'product_size.dart';
+part 'order.dart';
+part 'order_item.dart';

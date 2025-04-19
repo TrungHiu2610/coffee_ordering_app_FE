@@ -19,8 +19,10 @@ class RealmService
       User.schema,
       Size.schema,
       Topping.schema,
-      ProductSize.schema
-    ], schemaVersion: 4);
+      ProductSize.schema,
+      Order.schema,
+      OrderItem.schema
+    ], schemaVersion: 5);
 
     this._realm = Realm(config);
   }

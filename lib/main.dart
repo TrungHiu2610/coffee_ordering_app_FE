@@ -7,13 +7,12 @@ import 'package:flutter_coffee_shop_app/services/realm.dart';
 import 'package:flutter_coffee_shop_app/providers/cart_provider.dart';
 import 'package:realm/realm.dart';
 
+import 'data/seed_data.dart';
 import 'models/models.dart'; // tạo file này theo hướng dẫn ở trên
 
 void main() {
   final realmService = RealmService();
   final realm = realmService.realm;
-  //final currentUserId = realmService.getCurrentUserId(); // ví dụ hàm lấy user đang login
-
   final firstUser = realm.all<User>().firstOrNull;
 
   if (firstUser == null) {
@@ -22,7 +21,10 @@ void main() {
     print("Đã tạo user");
     return;
   }
+
   final currentUserId = firstUser.id;
+
+  //seedInitialData(realmService);
 
   runApp(
     MultiProvider(

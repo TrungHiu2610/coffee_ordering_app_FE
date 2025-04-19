@@ -111,6 +111,24 @@ class PaymentScreen extends StatelessWidget {
                 SizedBox(height: 12),
                 ElevatedButton(
                   onPressed: () {
+
+                    // bên phía khách hàng:
+                    // clear giỏ hàng
+                    // tạo 1 order
+                    // pttt là tại quầy, trangj thái đơn là chờ thanh toán tại quầy
+                    // trạng thái xử lý:đặt hàng thành công và trạng thái gì đó là chờ xác nhận trên món mới đặt
+                    // sẽ có 1 nút thêm món để khách hàng thêm tiếp món khác, trạng thái là đã thêm món gì,..., ví dụ đặt thêm cà phê sữa thì danh saách trạng thái là: 1.đặt hàng thành công 2. đã xác nhận các món trong giỏ hàng 3. đã thêm món cà phê sữa 4. đã xác nhận món cà phê sữa
+                    // khi được xác nhận món mới rồi thì lúc này các món mới đó mới có trạng thái là đã xác nhận
+                    // sau khi được thông báo và trạng thái được update thành chờ lấy nước, khách hàng sẽ đến quầy lấy nước, show order id và lấy nước
+                    // sau đó khách hàng chọn xác nhận đơn hàng, sau khi xác nhận thì khách hàng sẽ được đánh giá review từng món nước đã đặt
+                    // quá trình thanh toán tại quầy kết thúc
+
+                    // bên phía nhân viên
+                    // bên màn hình của nhân viên sẽ pop up đơn hàng chờ xác nhận
+                    // khi nhân viên bấm xác nhận thì trạng thái xử lý của các sản phẩm trong đơn vừa đặt bên máy của khách hàng là đã xác nhận
+                    // nếu khách hàng đặt tiếp món khác thì cũng xem chi tiết đơn, rồi bấm xác nhận.
+                    // sau khi làm nước xong, sẽ bấm hòan thành đơn hàng, lúc này máy khách sẽ được thông báo và cập nhật trạng thái xử lý là chờ lấy nước
+
                     // TODO: Xử lý xác nhận đơn hàng
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(content: Text("Đã chọn thanh toán tại quầy")),
