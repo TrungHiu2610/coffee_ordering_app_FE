@@ -87,13 +87,17 @@ class CartProvider with ChangeNotifier {
   }
 
   void increaseQuantity(CartItem item) {
-    item.quantity++;
+    realm.write((){
+      item.quantity++;
+    });
     notifyListeners();
   }
 
   void decreaseQuantity(CartItem item) {
     if (item.quantity > 1) {
-      item.quantity--;
+      realm.write((){
+        item.quantity--;
+      });
       notifyListeners();
     } else {
       removeItem(item);
@@ -101,7 +105,9 @@ class CartProvider with ChangeNotifier {
   }
 
   void removeItem(CartItem item) {
-    realm.delete(item);
+    realm.write((){
+      realm.delete(item);
+    });
     notifyListeners();
   }
 

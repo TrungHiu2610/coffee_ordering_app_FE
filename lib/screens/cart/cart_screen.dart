@@ -26,17 +26,36 @@ class CartScreenState extends State<CartScreen> {
     return res;
   }
 
+  void confirmRemove(CartItem item, CartProvider cartProvider)
+  {
+    showDialog(
+        barrierDismissible: false,
+        context: context,
+        builder: (_) => AlertDialog(
+          content: Text("Bạn chắc chắn muốn xóa sản phẩm \"${item.product?.name}\" ?"),
+          title: Text("Xác nhận xóa sản phẩm"),
+          actions: [
+            TextButton(onPressed: (){
+              Navigator.pop(context);
+            }, child: Text("Không")),
+            TextButton(onPressed: (){
+              cartProvider.removeItem(item);
+              Navigator.pop(context);
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text("Đã xóa sản phẩm ra khỏi giỏ hàng")),
+              );
+            }, child: Text("Có")),
+          ],
+        )
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     final cartProvider = Provider.of<CartProvider>(context);
     final cart = cartProvider.cart;
 
-    if (cart == null) {
-      return Center(child: Text("Chưa "));
-    }
-
-    final cartItems = cart.cartItems.toList();
+    final cartItems = cart?.cartItems.toList();
 
     return Scaffold(
       appBar: AppBar(
@@ -58,85 +77,104 @@ class CartScreenState extends State<CartScreen> {
           icon: Icon(Icons.arrow_back),
         ),
       ),
-      body: Column(
+      body: cartItems!.isEmpty
+          ? Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text("Giỏ hàng trống")
+              ],
+            ),
+          )
+          : Column(
         children: [
           Expanded(
               child: ListView.builder(
-              itemCount: cartItems.length,
-              itemBuilder: (_, index) {
-                final item = cartItems[index];
-                final product = item.product;
+                  itemCount: cartItems.length,
+                  itemBuilder: (_, index) {
+                    final item = cartItems[index];
+                    final product = item.product;
 
-                return ListTile(
-                  title: Text(
-                    product?.name ?? "Unknown",
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  subtitle: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        "${item.description.isEmpty ? "No description" : item.description} - ${printToppings(item.toppings)}",
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
+                    return ListTile(
+                      title: Text(
+                        product?.name ?? "Unknown",
+                        style: TextStyle(fontWeight: FontWeight.bold),
                       ),
-                      SizedBox(height: 4),
-                      Text(
-                        "${item.totalPrice.toStringAsFixed(0).replaceAllMapped(RegExp(r'\B(?=(\d{3})+(?!\d))'), (match) => ',')}đ",
-                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                      subtitle: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "${item.description.isEmpty ? "No description" : item.description} - ${printToppings(item.toppings)}",
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          SizedBox(height: 4),
+                          Text(
+                            "${item.totalPrice.toStringAsFixed(0).replaceAllMapped(RegExp(r'\B(?=(\d{3})+(?!\d))'), (match) => ',')}đ",
+                            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
-                  trailing: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      IconButton(
-                        icon: Icon(Icons.remove),
-                        onPressed: () {
-                          cartProvider.decreaseQuantity(item);
-                        },
+
+                      // CRUD giỏ hàng
+                      trailing: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          IconButton(
+                            icon: Icon(Icons.remove),
+                            onPressed: () {
+                              if(item.quantity > 1)
+                              {
+                                cartProvider.decreaseQuantity(item);
+                              }
+                              else{
+                                confirmRemove(item, cartProvider);
+                              }
+                            },
+                          ),
+                          Text("${item.quantity}"),
+                          IconButton(
+                            icon: Icon(Icons.add),
+                            onPressed: () {
+                              cartProvider.increaseQuantity(item);
+                            },
+                          ),
+                          IconButton(
+                            icon: Icon(Icons.delete, color: Colors.red),
+                            onPressed: () {
+                              confirmRemove(item, cartProvider);
+                            },
+                          ),
+                        ],
                       ),
-                      Text("${item.quantity}"),
-                      IconButton(
-                        icon: Icon(Icons.add),
-                        onPressed: () {
-                          cartProvider.increaseQuantity(item);
-                        },
-                      ),
-                      IconButton(
-                        icon: Icon(Icons.delete, color: Colors.red),
-                        onPressed: () {
-                          cartProvider.removeItem(item);
-                        },
-                      ),
-                    ],
-                  ),
-                  contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  isThreeLine: true,
-                );
-              }
-          )
+                      contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      isThreeLine: true,
+                    );
+                  }
+              )
           ),
 
           Text("Tổng tiền: ${cartProvider.totalPrice.toStringAsFixed(3)}đ"),
 
-            ElevatedButton(
-              onPressed: () {},
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.cyan,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                padding: EdgeInsets.symmetric(
-                  horizontal: 24,
-                  vertical: 12,
-                ),
+
+          // thanh toán
+          ElevatedButton(
+            onPressed: () {},
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.cyan,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
               ),
-              child: Text(
-                "Thanh toán",
-                style: TextStyle(color: Colors.white),
+              padding: EdgeInsets.symmetric(
+                horizontal: 24,
+                vertical: 12,
               ),
             ),
+            child: Text(
+              "Thanh toán",
+              style: TextStyle(color: Colors.white),
+            ),
+          ),
         ],
       ),
     );
