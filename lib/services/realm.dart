@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:realm/realm.dart';
 
 import '../models/models.dart';
@@ -31,11 +32,6 @@ class RealmService
 
   Realm get realm => _realm;
 
-  User getCurrentUser() {
-    final user = realm.all<User>().first; // hoặc logic login cụ thể của bạn
-    return user;
-  }
-
   User? _currentUser;
 
   User? get currentUser => _currentUser;
@@ -68,4 +64,30 @@ class RealmService
     }
   }
 
+  void clearCart() {
+    if (_currentCart == null) return;
+    realm.write(() {
+      for (final item in _currentCart!.cartItems) {
+        realm.delete(item);
+      }
+    });
+  }
+
+  Order? _currentOrder;
+  Order? get currentOrder => _currentOrder;
+  void setCurrentOrder() {
+    if (_currentUser == null) return;
+
+    final orders = realm.query<Order>(
+        'customer.id == \$0 AND status == \$1',
+        [_currentUser!.id, "Chờ quán xác nhận"]
+    );
+    if (orders.isNotEmpty) {
+      // Lấy order mới nhất bằng tay
+      Order? latestOrder = orders.reduce((a, b) => a.createdAt.isAfter(b.createdAt) ? a : b);
+      _currentOrder = latestOrder;
+    } else {
+      _currentOrder = null;
+    }
+  }
 }

@@ -29,13 +29,14 @@ class CartScreenState extends State<CartScreen> {
   @override
   void initState() {
     super.initState();
-    loadCartFromRealm();
+    realmService = context.read<RealmService>();
+    user = realmService.currentUser;
+    cart = realmService.currentCart;
+    loadCartItemsFromRealm();
   }
 
-  void loadCartFromRealm()
+  void loadCartItemsFromRealm()
   {
-    user = RealmService().currentUser;
-    cart = RealmService().currentCart;
     if(cart!.cartItems.isNotEmpty)
       {
         setState(() {
@@ -44,7 +45,9 @@ class CartScreenState extends State<CartScreen> {
       }
     else
       {
-        cartItems=[];
+        setState(() {
+          cartItems=[];
+        });
       }
   }
 
@@ -70,7 +73,7 @@ class CartScreenState extends State<CartScreen> {
             }, child: Text("Không")),
             TextButton(onPressed: (){
               cartProvider.removeItem(item);
-              loadCartFromRealm();
+              loadCartItemsFromRealm();
               Navigator.pop(context);
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(content: Text("Đã xóa sản phẩm ra khỏi giỏ hàng")),

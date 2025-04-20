@@ -8,9 +8,10 @@ import '../models/models.dart';
 
 class CartProvider with ChangeNotifier {
   Cart? _currentCart;
+  final RealmService realmService;
 
-  CartProvider() {
-    _currentCart = RealmService().currentCart;
+  CartProvider(this.realmService) {
+    _currentCart = realmService.currentCart;
   }
 
   int get itemCount => _currentCart?.cartItems.length ?? 0;
@@ -94,12 +95,13 @@ class CartProvider with ChangeNotifier {
   }
 
   void clearCart() {
+    realmService.clearCart();
     _currentCart = null;
-    notifyListeners();
+    //notifyListeners();
   }
 
   void loadCartForUser() {
-    _currentCart = RealmService().currentCart;
+    _currentCart = realmService.currentCart;
     notifyListeners();
   }
 }

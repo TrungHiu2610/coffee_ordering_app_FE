@@ -16,7 +16,8 @@ class LoginPage extends StatelessWidget {
     final email = _emailCtrl.text.trim();
     final pass = _passCtrl.text;
 
-    final realm = RealmService().realm;
+    final realmService = context.read<RealmService>();
+    final realm = realmService.realm;
     final user = realm.query<User>('email == \$0 AND password == \$1', [email, pass]).firstOrNull;
 
     if (user == null) {
@@ -24,8 +25,8 @@ class LoginPage extends StatelessWidget {
         SnackBar(content: Text('Sai email hoặc mật khẩu')),
       );
     } else {
-      RealmService().setCurrentUser(user);
-      RealmService().setCurrentCart();
+      realmService.setCurrentUser(user);
+      realmService.setCurrentCart();
       Provider.of<CartProvider>(context, listen: false).loadCartForUser();
       Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => LayoutScreen()));
     }

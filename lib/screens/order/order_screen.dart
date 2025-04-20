@@ -1,16 +1,38 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_coffee_shop_app/models/models.dart';
 import 'package:flutter_coffee_shop_app/screens/layout.dart';
+import 'package:provider/provider.dart';
+import 'package:realm/realm.dart';
 
-class OrderDetailScreen extends StatelessWidget {
-  final Order order;
+import '../../services/realm.dart';
 
-  const OrderDetailScreen({super.key, required this.order});
+class OrderDetailScreen extends StatefulWidget
+{
+  @override
+  State<StatefulWidget> createState() {
+    return OrderDetailScreenState();
+  }
+}
+
+class OrderDetailScreenState extends State<OrderDetailScreen> {
+
+  late RealmService realmService;
+  late Realm realm;
+  late Order order;
+  late List<OrderItem> orderItems;
+
+  @override
+  void initState() {
+    super.initState();
+    realmService = context.read<RealmService>();
+    realm = realmService.realm;
+    realmService.setCurrentOrder();
+    order = realmService.currentOrder!;
+    orderItems = order.items.toList();
+  }
 
   @override
   Widget build(BuildContext context) {
-    final orderItems = order.items;
-
     return Scaffold(
       appBar: AppBar(
         title: Text("Chi tiết đơn hàng"),

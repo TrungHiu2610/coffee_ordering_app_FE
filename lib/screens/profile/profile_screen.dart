@@ -17,7 +17,8 @@ class ProfileScreen extends StatelessWidget
           children: [
             ElevatedButton(
               onPressed: () {
-                RealmService().logout();
+                final realmService = context.read<RealmService>();
+                realmService.logout();
                 Provider.of<CartProvider>(context, listen: false).clearCart();
                 Navigator.pushReplacement(
                     context,

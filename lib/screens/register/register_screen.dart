@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:realm/realm.dart';
 
 import '../../models/models.dart';
@@ -35,8 +36,8 @@ class _RegisterPageState extends State<RegisterPage> {
       return;
     }
 
-    final realm = RealmService().realm;
-    final existingUser = realm.query<User>('email == \$0', [email]).isNotEmpty;
+    final realmService = context.read<RealmService>();
+    final existingUser = realmService.realm.query<User>('email == \$0', [email]).isNotEmpty;
 
     if (existingUser) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -46,7 +47,7 @@ class _RegisterPageState extends State<RegisterPage> {
     }
 
     final user = User(ObjectId(), name, email, pass, 0, "User");
-    realm.write(() => realm.add(user));
+    realmService.realm.write(() => realmService.realm.add(user));
     RealmService().setCurrentUser(user);
 
     Navigator.pop(context); // Quay lại login

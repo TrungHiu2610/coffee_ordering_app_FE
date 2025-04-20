@@ -31,7 +31,7 @@ void main() {
       providers: [
         Provider<RealmService>.value(value: realmService), // để inject ở nhiều nơi
         ChangeNotifierProvider(
-          create: (_) => CartProvider(),
+          create: (_) => CartProvider(realmService),
         ),
       ],
       child: MaterialApp(
