@@ -1,16 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_coffee_shop_app/screens/cart/cart_screen.dart';
-import 'package:flutter_coffee_shop_app/services/realm.dart';
 import 'package:provider/provider.dart';
 
 import '../../providers/cart_provider.dart';
 
 class AppBarHome extends StatelessWidget implements PreferredSizeWidget {
+  const AppBarHome({super.key});
+
   @override
   Widget build(BuildContext context) {
-    final cartItemCount = RealmService().currentCart?.cartItems.length;
-
     return AppBar(
       centerTitle: true,
       title: Image.asset('assets/images/logo.png', height: 50),

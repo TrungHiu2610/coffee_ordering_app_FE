@@ -1,46 +1,81 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:flutter_coffee_shop_app/screens/home/home_screen.dart';
+import 'package:flutter_coffee_shop_app/providers/auth_provider.dart';
+import 'package:flutter_coffee_shop_app/providers/loyalty_provider.dart';
+import 'package:flutter_coffee_shop_app/providers/order_status_provider.dart';
+import 'package:flutter_coffee_shop_app/providers/table_provider.dart';
 import 'package:flutter_coffee_shop_app/screens/layout.dart';
-import 'package:flutter_coffee_shop_app/screens/login/login_screen.dart';
-import 'package:flutter_coffee_shop_app/screens/register/register_screen.dart';
+import 'package:flutter_coffee_shop_app/screens/auth/login_screen.dart';
+import 'package:flutter_coffee_shop_app/screens/auth/register_screen.dart';
+import 'package:flutter_coffee_shop_app/screens/splash_screen.dart';
+import 'package:flutter_coffee_shop_app/services/dio_client.dart';
+import 'package:flutter_coffee_shop_app/services/http_overrides.dart';
+import 'package:flutter_coffee_shop_app/services/signalr_service.dart';
 import 'package:provider/provider.dart';
 
-import 'package:flutter_coffee_shop_app/services/realm.dart';
 import 'package:flutter_coffee_shop_app/providers/cart_provider.dart';
-import 'package:realm/realm.dart';
 
-import 'data/seed_data.dart';
-import 'models/models.dart'; // tạo file này theo hướng dẫn ở trên
-
-void regenerateDB()
-{
-  final realmService = RealmService();
-  final realm = realmService.realm;
-  final fakeUser = realm.write(() => realm.add(User(ObjectId(), "Trung Híu","hieult2610@gmail.com","h122604h",0,"user")));
-  print("Đã tạo user");
-
-  seedInitialData(realmService);
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  
+  // Set up global HTTP overrides for SSL certificate validation
+  HttpOverrides.global = MyHttpOverrides();
+  
+  // Initialize SignalR
+  final baseUrl = DioClient().baseUrl;
+  await SignalRService().initialize(baseUrl);
+  
+  runApp(const MyApp());
 }
 
-void main() {
-  //regenerateDB();
-  final realmService = RealmService();
+class MyApp extends StatelessWidget {
+  const MyApp({Key? key}) : super(key: key);
 
-  runApp(
-    MultiProvider(
+  @override
+  Widget build(BuildContext context) {
+    return MultiProvider(
       providers: [
-        Provider<RealmService>.value(value: realmService), // để inject ở nhiều nơi
         ChangeNotifierProvider(
-          create: (_) => CartProvider(realmService),
+          create: (_) => AuthProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => CartProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => OrderStatusProvider(),
+        ),        ChangeNotifierProvider(
+          create: (_) => LoyaltyProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => TableProvider(),
         ),
       ],
       child: MaterialApp(
+        title: 'Coffee Shop',
         debugShowCheckedModeBanner: false,
-        home: LoginPage(),
+        theme: ThemeData(
+          primarySwatch: Colors.brown,
+          scaffoldBackgroundColor: Colors.grey[100],
+          appBarTheme: const AppBarTheme(
+            backgroundColor: Colors.brown,
+            foregroundColor: Colors.white,
+            elevation: 0,
+          ),
+          elevatedButtonTheme: ElevatedButtonThemeData(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.brown,
+              foregroundColor: Colors.white,
+            ),
+          ),
+        ),
+        initialRoute: '/',
         routes: {
-          '/register': (_) => RegisterPage()
+          '/': (context) => const SplashScreen(),
+          '/login': (context) => const LoginScreen(),
+          '/register': (context) => const RegisterScreen(),
+          '/home': (context) => const LayoutScreen(),
         },
       ),
-    ),
-  );
+    );
+  }
 }
