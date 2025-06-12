@@ -8,7 +8,7 @@ plugins {
 android {
     namespace = "com.example.flutter_coffee_shop_app"
     compileSdk = flutter.compileSdkVersion
-    ndkVersion = "27.0.12077973"
+    ndkVersion = "27.0.12077973" // Updated to match plugin requirements
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
